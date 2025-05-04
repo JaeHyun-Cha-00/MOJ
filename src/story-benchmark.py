@@ -1,9 +1,9 @@
 import pandas as pd
+from datasets import load_dataset
 
-file_path = "../dataset/story_benchmark_average.csv"
-df = pd.read_csv(file_path)
+ds = load_dataset("lars1234/story_writing_benchmark", "average", split="train")
+df = pd.DataFrame(ds)
 
-# Filter to keep only English-language entries
 df = df[df["language"] == "en"]
 
 simple_question_labels = {
@@ -42,35 +42,25 @@ detailed_question_descriptions = {
     "q15": "Satisfying plot resolution"
 }
 
-# q1 q2 q3 q3 ....
-
-# q1
-# q2
-# q3
-
-# Transform the dataset from wide format to long format
 long_df = df.melt(
     id_vars=["prompt", "story_text"],
-    value_vars=list(simple_question_labels.keys()),  # Unpivot q1~q15 columns
+    value_vars=list(simple_question_labels.keys()),
     var_name="q_key",
     value_name="human_score"
 )
 
-# Generate question based on detailed descriptions
 long_df["question"] = long_df["q_key"].map(detailed_question_descriptions).apply(
     lambda x: f"Evaluate the story's {x}"
 )
 
-# Map each q_key to a simple question type label
 long_df["question_type"] = long_df["q_key"].map(simple_question_labels)
-
 long_df["golden_answer"] = None
 long_df["answer_type"] = "story"
 long_df["attempted_answer"] = long_df["story_text"]
 
-# Select and reorder the final output columns
 final_df = long_df[[
     "question", "question_type", "golden_answer", "attempted_answer", "answer_type", "human_score"
 ]]
 
-final_df.to_csv("../converted_dataset/story_benchmark_converted.csv", index=False)
+output_path = "../converted_dataset/story_benchmark_converted.csv"
+final_df.to_csv(output_path, index=False)

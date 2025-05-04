@@ -1,57 +1,48 @@
-# In BuzzBench, the `prompt` is the instruction given to a language model
-# to generate a humor analysis—explaining how a joke works and judging its funniness.
-# 
-# The `judge_prompt`, on the other hand, is given to a separate model(Claude 3.5 Sonnet) acting as a judge,
-# which compares the model’s response to a human-written gold answer and evaluates how well the model captured the joke and its intended effect.
-#
-# While the `prompt` guides generation, the `judge_prompt` guides evaluation,
-# using Claude 3.5 Sonnet's scoring to assess humor understanding from both audience and writer perspectives.
-# "We picked Sonnet 3.5 to act as the judge partly because it scores highest on the Judgemark leaderboard, 
-# and partly because it seems least biased to favour longwinded, over-analysed, over-reaching responses." -- from the paper
-
 import pandas as pd
 import re
+import csv
+from datasets import load_dataset
 
-file_path = "/home/j4cha/moj-project/dataset/train-00000-of-00001.csv"
-df = pd.read_csv(file_path, engine="python")
+pd.set_option("display.max_columns", None)
+pd.set_option("display.max_colwidth", None)
+
+ds = load_dataset("sam-paech/BuzzBench-v0.60", split="test")
 
 rows = []
 
-for _, row in df.iterrows():
+for row in ds:
     try:
-        prompt = row["prompt"]
-        intro_text = row["intro_text"]
-        golden_answer = row["gold_answer"]
+        prompt = row["prompt"].strip()
+        golden_answer = row["gold_answer"].strip()
 
-        # Extract funniness ratings
-        audience_match = re.search(r"Audience:\s*(\d+)", golden_answer)
-        writer_match = re.search(r"Comedy writer:\s*(\d+)", golden_answer)
+        blocks = re.split(r"(?=^# )", golden_answer, flags=re.MULTILINE)
+        blocks = [b.strip() for b in blocks if b.strip()]
 
-        # Compute the average human score
-        if audience_match and writer_match:
-            audience_score = int(audience_match.group(1))
-            writer_score = int(writer_match.group(1))
-            human_score = (audience_score + writer_score) / 2
-        else:
-            human_score = None
+        for block in blocks:
 
-        # (prompt) + (intro text) into full question
-        full_question = f"{str(prompt).strip()}\n\nIntro:\n{str(intro_text).strip()}"
+            matches = re.findall(r"(Audience|Comedy writer):\s*(\d+)", block)
+            scores = [int(s) for _, s in matches]
+            human_score = sum(scores) / len(scores) if scores else None
 
-        # Append the row
-        rows.append({
-            "question": full_question,
-            "question_type": "humor-eval",
-            "golden_answer": str(golden_answer),
-            "attempted_answer": None,
-            "answer_type": "no-attempt",
-            "human_score": human_score
-        })
+            block_cleaned = re.sub(r"\*\*Funniness ratings:\*\*.*", "", block, flags=re.DOTALL | re.IGNORECASE)
+            block_cleaned = re.sub(r"\*\*Ratings:\*\*.*", "", block_cleaned, flags=re.DOTALL | re.IGNORECASE)
+
+            rows.append({
+                "question": prompt,
+                "question_type": "humor-eval",
+                "golden_answer": block_cleaned.strip(),
+                "attempted_answer": "none",
+                "answer_type": "no-attempt",
+                "human_score": human_score
+            })
 
     except Exception as e:
-        # Skip rows with error
-        print(f"Skipped by error:", e)
+        print("Skipped row due to error:", e)
         continue
 
 output_path = "../converted_dataset/buzzbench_converted.csv"
-pd.DataFrame(rows).to_csv(output_path, index=False)
+df = pd.DataFrame(rows)
+df.to_csv(output_path, index=False, quoting=csv.QUOTE_ALL)
+
+df2 = pd.read_csv(output_path)
+print(df2.head())
