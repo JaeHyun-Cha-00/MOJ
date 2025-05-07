@@ -31,7 +31,7 @@ for row in ds:
                 "question": prompt,
                 "question_type": "humor-eval",
                 "golden_answer": block_cleaned.strip(),
-                "attempted_answer": "none",
+                "attempted_answer": None,
                 "answer_type": "no-attempt",
                 "human_score": human_score
             })

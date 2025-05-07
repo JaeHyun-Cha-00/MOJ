@@ -14,16 +14,26 @@ for row in ds:
         human_ref_B = row["human_ref_B"]
         score_A = row["score_A"]
         score_B = row["score_B"]
+        label = row["labels"]
+        score_ratio = row["score_ratio"]
 
-        # Determine golden_answer
-        if score_A > score_B:
-            golden_answer = human_ref_A
-        elif score_B > score_A:
-            golden_answer = human_ref_B
+        # Determine which candidate is preferred
+        if label == 0:
+            golden_answer = "B"
+            score_b = 1.0
+            score_a = 1.0 / score_ratio
+        elif label == 1:
+            golden_answer = "A"
+            score_a = 1.0
+            score_b = 1.0 / score_ratio
         else:
-            golden_answer = human_ref_A, human_ref_B  # score_A == score_B
+            golden_answer = "tie"
+            score_a = score_b = 0.5
 
-        # Build full question
+        # Format human_score to single string
+        score_str = f"A:{round(score_a, 4)}, B:{round(score_b, 4)}"
+
+        # Build single-row question with both candidates
         full_question = (
             f"History:\n{str(history).strip()}\n\n"
             f"Candidate A:\n{str(human_ref_A).strip()}\n\n"
@@ -31,18 +41,14 @@ for row in ds:
             "Question: Which candidate provides a better response?"
         )
 
-        # Append the row
+        # Append row
         rows.append({
             "question": full_question,
             "question_type": "preference-eval",
             "golden_answer": golden_answer,
             "attempted_answer": None,
-            "answer_type": "multiple-choice",
-            "human_score": None                      
-            
-            # How to calculate human_score? 
-            # 1. 5 * {(human_score_A or B) / (human_score_A + human_score_B)} 
-            # 2. Just use label? Using 0 and 1 to show who won?
+            "answer_type": "comment-ranking",
+            "human_score": score_str
         })
 
     except Exception as e:
