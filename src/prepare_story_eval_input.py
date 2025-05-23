@@ -13,11 +13,11 @@ def convert_to_eval_format(input_path, output_path):
     eval_df["language"] = "en"
 
     # Save to evaluation format
-    eval_df.to_csv(output_path, index=False)
+    eval_df.to_csv(output_path, index=False, float_format="%.2f")
 
 
 if __name__ == "__main__":
-    input_csv = "../converted_dataset/story_benchmark_converted.csv"
+    input_csv = "../converted_dataset/story_benchmark_converted_50.csv"
     output_csv = "../converted_dataset/story_eval_input.csv"
 
     convert_to_eval_format(input_csv, output_csv)

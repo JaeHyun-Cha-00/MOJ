@@ -64,3 +64,5 @@ final_df = long_df[[
 
 output_path = "../converted_dataset/story_benchmark_converted.csv"
 final_df.to_csv(output_path, index=False)
+
+final_df.head(50).to_csv("../converted_dataset/story_benchmark_converted_50.csv", index=False)
