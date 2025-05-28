@@ -4,16 +4,14 @@ import time
 import json
 
 INPUT_PATH = "../converted_dataset/buzzbench_converted.csv"
-OUTPUT_PATH = "../converted_dataset/buzzbench_model_response_qwen(2.5).csv"
-# OUTPUT_PATH = "../converted_dataset/buzzbench_model_response_phi-4-mini-instruct.csv"
-# OUTPUT_PATH = "../converted_dataset/buzzbench_model_response_gemma-3-4b-it.csv"
+OUTPUT_PATH = "../converted_dataset/buzzbench_model_qwen2.5-7B-Instruct.csv"
+# OUTPUT_PATH = "../converted_dataset/buzzbench_model_phi-4-multimodal-instruct.csv"
 
 VLLM_API_URL = "http://localhost:8000/v1/chat/completions"
 
 
 MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
-# MODEL_NAME = "microsoft/Phi-4-mini-instruct"
-# MODEL_NAME = "google/gemma-3-4b-it"
+# MODEL_NAME = "microsoft/Phi-4-multimodal-instruct"
 
 df = pd.read_csv(INPUT_PATH)
 headers = {"Content-Type": "application/json"}
@@ -25,7 +23,21 @@ for idx, row in df.iterrows():
     prompt_text = f"""
 You are a fair and thoughtful humor evaluator.
 
-Here is the intro:
+Only analyze the character whose intro heading appears below (e.g., "# Character Intro").
+Do not mention or evaluate *any* other characters, even if their names appear in the intro text.
+Your response must only include one character analysis.
+
+If you mention more than one character, your answer is invalid.
+
+At the end of your response, include the ratings section in this exact format:
+
+** Funniness Ratings **
+Audience: <1–5> (<description from scale>)
+Comedy writer: <1–5> (<description from scale>)
+
+Use this exact structure. Do not change the heading or labels.
+
+Here is the full introduction text:
 
 {row['question']}
 """

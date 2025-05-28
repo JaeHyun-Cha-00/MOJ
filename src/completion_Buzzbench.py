@@ -4,7 +4,7 @@ import time
 import json
 
 INPUT_PATH = "../converted_dataset/buzzbench_converted.csv"
-OUTPUT_PATH = "../converted_dataset/buzzbench_with_model_response_only.csv"
+OUTPUT_PATH = "../converted_dataset/buzzbench_with_model_llama-3.1-8B-Instruct.csv"
 
 VLLM_API_URL = "http://localhost:8000/v1/completions"
 MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
@@ -18,7 +18,21 @@ for idx, row in df.iterrows():
     prompt_text = f"""
 You are a fair and thoughtful humor evaluator.
 
-Here is the intro:
+Only analyze the character whose intro heading appears below (e.g., "# Character Intro").
+Do not mention or evaluate *any* other characters, even if their names appear in the intro text.
+Your response must only include one character analysis.
+
+If you mention more than one character, your answer is invalid.
+
+At the end of your response, include the ratings section in this exact format:
+
+** Funniness Ratings **
+Audience: <1–5> (<description from scale>)
+Comedy writer: <1–5> (<description from scale>)
+
+Use this exact structure. Do not change the heading or labels.
+
+Here is the full introduction text:
 
 {row['question']}
 """
@@ -26,7 +40,7 @@ Here is the intro:
     payload = {
         "model": MODEL_NAME,
         "prompt": prompt_text,
-        "max_tokens": 512,
+        "max_tokens": 1024,
         "temperature": 0.5,
         "stop": ["</s>"]
     }

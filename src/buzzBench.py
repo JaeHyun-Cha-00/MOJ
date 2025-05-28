@@ -6,31 +6,53 @@ from datasets import load_dataset
 pd.set_option("display.max_columns", None)
 pd.set_option("display.max_colwidth", None)
 
+# Load dataset
 ds = load_dataset("sam-paech/BuzzBench-v0.60", split="test")
-ds = ds.shuffle(seed=42).select(range(10))
 
 rows = []
 
 for row in ds:
     try:
+        # Clean prompt
         full_prompt = row["prompt"].strip()
+
+        # Remove template placeholder from prompt (e.g., '# [Character 2 name]'s intro\netc.')
+        full_prompt = re.sub(
+            r"# \[Character 2 name\]'s intro\s+etc\.", 
+            "", 
+            full_prompt, 
+            flags=re.IGNORECASE
+        ).strip()
+
+        # Clean golden answer
         golden_answer = row["gold_answer"].strip()
 
+        # Split into character intro blocks
         blocks = re.split(r"(?=^# )", golden_answer, flags=re.MULTILINE)
         blocks = [b.strip() for b in blocks if b.strip()]
 
         for block in blocks:
+            # Extract human scores
             matches = re.findall(r"(Home Audience|Audience|Comedy writer|Writer):\s*([1-5])", block, re.IGNORECASE)
             scores = [int(score) for _, score in matches]
             human_score = sum(scores) / len(scores) if scores else None
 
-            block_cleaned = re.sub(r"\*\*(Funniness\s+Ratings|Ratings)\*\*.*", "", block, flags=re.DOTALL | re.IGNORECASE)
+            # Remove funniness rating section
+            block_cleaned = re.sub(
+                r"\*\*(Funniness\s+Ratings|Ratings)\*\*.*", 
+                "", 
+                block, 
+                flags=re.DOTALL | re.IGNORECASE
+            )
 
+            # Extract character title
             match_title = re.match(r"# (.+?)'s intro", block)
             character_intro = match_title.group(0) if match_title else "[Unknown Character]"
 
+            # Construct final question
             question_combined = f"{full_prompt}\n\n{character_intro}"
 
+            # Append row
             rows.append({
                 "question": question_combined.strip(),
                 "question_type": "humor-eval",
@@ -44,6 +66,7 @@ for row in ds:
         print("Skipped row due to error:", e)
         continue
 
+# Save to CSV
 output_path = "../converted_dataset/buzzbench_converted.csv"
 df = pd.DataFrame(rows)
 df.to_csv(output_path, index=False, quoting=csv.QUOTE_ALL)
