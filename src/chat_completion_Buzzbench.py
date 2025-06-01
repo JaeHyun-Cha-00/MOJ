@@ -6,12 +6,16 @@ import json
 INPUT_PATH = "../converted_dataset/buzzbench_converted.csv"
 OUTPUT_PATH = "../converted_dataset/buzzbench_model_qwen2.5-7B-Instruct.csv"
 # OUTPUT_PATH = "../converted_dataset/buzzbench_model_phi-4-multimodal-instruct.csv"
+# OUTPUT_PATH = "../converted_dataset/buzzbench_model_DeepSeek-R1-0528-Qwen3-8B.csv"
+# OUTPUT_PATH = "../converted_dataset/buzzbench_model_Qwen3-8B.csv"
 
 VLLM_API_URL = "http://localhost:8000/v1/chat/completions"
 
 
 MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
 # MODEL_NAME = "microsoft/Phi-4-multimodal-instruct"
+# MODEL_NAME = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"
+# MODEL_NAME = "Qwen/Qwen3-8B"
 
 df = pd.read_csv(INPUT_PATH)
 headers = {"Content-Type": "application/json"}
