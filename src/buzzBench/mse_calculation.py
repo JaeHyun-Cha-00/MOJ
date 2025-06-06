@@ -2,12 +2,14 @@ import pandas as pd
 import numpy as np
 import re
 import matplotlib.pyplot as plt
-import seaborn as sns
+# import seaborn as sns
 
 file_paths = {
-    "phi-4-multimodal-instruct": "../converted_dataset/buzzbench_model_phi-4-multimodal-instruct.csv",
-    "qwen2.5-7B-Instruct": "../converted_dataset/buzzbench_model_qwen2.5-7B-Instruct.csv",
-    "llama-3.1-8B-Instruct": "../converted_dataset/buzzbench_with_model_llama-3.1-8B-Instruct.csv"
+    # "phi-4-multimodal-instruct": "../converted_dataset/buzzbench_model_phi-4-multimodal-instruct.csv",
+    # "qwen2.5-7B-Instruct": "../converted_dataset/buzzbench_model_qwen2.5-7B-Instruct.csv",
+    # "llama-3.1-8B-Instruct": "../converted_dataset/buzzbench_with_model_llama-3.1-8B-Instruct.csv",
+    "DeepSeek-R1-0528-Qwen3-8B": "../converted_dataset/buzzbench_model_DeepSeek-R1-0528-Qwen3-8B.csv",
+    "Qwen3-8B": "../converted_dataset/buzzbench_model_Qwen3-8B.csv"
 }
 
 # Score extraction function
@@ -74,25 +76,29 @@ print("=== Score Missing Stats ===")
 print(na_table)
 
 # Create scatterplot
-scatter_df = pd.DataFrame(plot_data)
-plt.figure(figsize=(8, 6))
-sns.scatterplot(data=scatter_df, x="Human Score", y="Model Score", hue="Model", alpha=0.2, palette="Set1")
-plt.title("Human Score vs Model Score by Model")
-plt.grid(True)
-plt.tight_layout()
+# scatter_df = pd.DataFrame(plot_data)
+# plt.figure(figsize=(8, 6))
+# sns.scatterplot(data=scatter_df, x="Human Score", y="Model Score", hue="Model", alpha=0.2, palette="Set1")
+# plt.title("Human Score vs Model Score by Model")
+# plt.grid(True)
+# plt.tight_layout()
 
-# Replace plt.show() with this
-plt.savefig("scatterplot.png", dpi=300)
-print("Scatterplot saved as scatterplot.png")
+# # Replace plt.show() with this
+# plt.savefig("scatterplot.png", dpi=300)
+# print("Scatterplot saved as scatterplot.png")
 
 #=== MSE Table ===
 #                           BuzzBench
 #phi-4-multimodal-instruct   2.290146
 #qwen2.5-7B-Instruct         1.722886
 #llama-3.1-8B-Instruct       2.087786
+#DeepSeek-R1-0528-Qwen3-8B   1.971415
+#Qwen3-8B                    1.849237
 
 #=== Score Missing Stats ===
 #                           NA_count  Total_rows  NA_ratio
 #phi-4-multimodal-instruct         0         144  0.000000
 #qwen2.5-7B-Instruct               1         144  0.006944
 #llama-3.1-8B-Instruct             6         144  0.041667
+#DeepSeek-R1-0528-Qwen3-8B         8         144  0.055556
+#Qwen3-8B                          6         144  0.041667
