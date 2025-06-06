@@ -2,7 +2,7 @@ import pandas as pd
 from datasets import load_dataset
 
 # Load SHP dataset
-ds = load_dataset("stanfordnlp/SHP", split="train")
+ds = load_dataset("stanfordnlp/SHP", split="train").select(range(50))
 
 rows = []
 
@@ -55,5 +55,5 @@ for row in ds:
         print(f"Skipped by error: {e}")
         continue
 
-output_path = "../converted_dataset/shp_converted.csv"
+output_path = "../../converted_dataset/shp_converted.csv"
 pd.DataFrame(rows).to_csv(output_path, index=False)
