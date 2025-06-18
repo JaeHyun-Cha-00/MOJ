@@ -2,7 +2,7 @@ import pandas as pd
 from datasets import load_dataset
 
 # Load SHP dataset
-ds = load_dataset("stanfordnlp/SHP", split="train").select(range(50))
+ds = load_dataset("stanfordnlp/SHP", split="test").shuffle(seed=42).select(range(2000))
 
 rows = []
 
