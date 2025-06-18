@@ -3,8 +3,8 @@ import requests
 import time
 import json
 
-INPUT_PATH = "../converted_dataset/buzzbench_converted.csv"
-OUTPUT_PATH = "../converted_dataset/buzzbench_with_model_llama-3.1-8B-Instruct.csv"
+INPUT_PATH = "../../converted_dataset/buzzbench_converted.csv"
+OUTPUT_PATH = "../../converted_dataset/buzzbench_with_model_llama-3.1-8B-Instruct.csv"
 
 VLLM_API_URL = "http://localhost:8000/v1/completions"
 MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
@@ -27,8 +27,8 @@ If you mention more than one character, your answer is invalid.
 At the end of your response, include the ratings section in this exact format:
 
 ** Funniness Ratings **
-Audience: <1–5> (<description from scale>)
-Comedy writer: <1–5> (<description from scale>)
+Audience: <1–5> (must be one of: 1, 2, 3, 4, or 5 — no decimals)
+Comedy writer: <1–5> (must be one of: 1, 2, 3, 4, or 5 — no decimals)
 
 Use this exact structure. Do not change the heading or labels.
 
