@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import re
@@ -6,6 +7,7 @@ import matplotlib.cm as cm
 import matplotlib.colors as colors
 from mpl_toolkits.mplot3d import Axes3D
 from collections import Counter
+import seaborn as sns
 
 file_paths = {
     "phi-4-multimodal-instruct": "../../converted_dataset/buzzbench_model_phi-4-multimodal-instruct.csv",
@@ -24,7 +26,7 @@ def extract_scores(text):
         return np.nan, np.nan
 
     audience = int(match_aud.group(1))
-    writer = int(match_wr.group(1))
+    writer = int(match_wr.group(1)) 
 
     if 1 <= audience <= 5 and 1 <= writer <= 5:
         return float(audience), float(writer)
@@ -88,7 +90,6 @@ na_table = pd.DataFrame.from_dict(na_stats, orient="index")
 print("=== Score Missing Stats ===")
 print(na_table, end="\n\n")
 
-# 3D Bar Plot
 plot_df = pd.DataFrame(plot_data)
 models = plot_df["Model"].unique()
 evaluators = ["Audience", "Comedy Writer"]
@@ -105,41 +106,90 @@ for model in models:
         model_scores = subset_df["Model Score"]
         counter = Counter(zip(human_scores, model_scores))
 
-        # x, y, z-axis
-        xs, ys, zs = [], [], []
-        for (x, y), count in counter.items():
-            xs.append(x)
-            ys.append(y)
-            zs.append(int(count))
+        heatmap_data = np.zeros((6, 6))
+        for (h, m), count in counter.items():
+            if 0 <= h <= 5 and 0 <= m <= 5:
+                heatmap_data[h][m] = count
 
-        norm = colors.Normalize(vmin=1, vmax=5)
-        cmap = plt.colormaps["coolwarm"]
-        bar_colors = [cmap(norm(score)) for score in ys]
+        fixed_scale = True 
+        vmax = int(max(counter.values())) if counter else 1
 
-        fig = plt.figure(figsize=(10, 7))
-        ax = fig.add_subplot(111, projection='3d')
-        dx = dy = 0.5
-        dz = zs
+        plt.figure(figsize=(6, 5))
+        sns.heatmap(
+            heatmap_data,
+            # annot : annotating number
+            annot=True,
+            # color : Yellow -> Red
+            cmap="YlOrRd",
+            vmin=0 if fixed_scale else None,
+            vmax=vmax if fixed_scale else None,
+            square=True,
+            # x and y-axis, [0,1,2,3,4,5]
+            xticklabels=range(6),
+            yticklabels=range(6)
+        )
 
-        ax.bar3d(xs, ys, np.zeros_like(zs), dx, dy, dz, color=bar_colors, alpha=0.3)
+        plt.xlabel("Model Score")
+        plt.ylabel("Human Score")
+        plt.title(f"Heatmap: {model} - {evaluator}")
 
-        ax.set_xlabel('Human Score')
-        ax.set_ylabel('Model Score')
-        ax.set_zlabel('Count')
-        ax.set_title(f'3D Score: {model} - {evaluator}')
-        ax.set_xlim(0, 5.8)
-        ax.set_ylim(-0.8, 6)
-        ax.set_xticks(range(0, 6))
-        ax.set_yticks(range(0, 6))
-        ax.set_zlim(0, max(zs) + 1)
-        ax.set_zticks(range(0, max(zs) + 2, 4))
-
+        filename = f"bar_plot/heatmap_{model.replace('/', '_')}_{evaluator.replace(' ', '_')}.png"
         plt.tight_layout()
-        filename = f"3d_barplot_{model.replace('/', '_')}_{evaluator.replace(' ', '_')}.png"
-        
-        # Save in Image
         plt.savefig(filename, dpi=300)
         plt.close()
+
+#### 3D Bar Plot ####
+# plot_df = pd.DataFrame(plot_data)
+# models = plot_df["Model"].unique()
+# evaluators = ["Audience", "Comedy Writer"]
+
+# for model in models:
+#     for evaluator in evaluators:
+#         subset_df = plot_df[
+#             (plot_df["Model"] == model) & (plot_df["Evaluator"] == evaluator)
+#         ]
+#         if subset_df.empty:
+#             continue
+
+#         human_scores = subset_df["Human Score"]
+#         model_scores = subset_df["Model Score"]
+#         counter = Counter(zip(human_scores, model_scores))
+
+#         # x, y, z-axis
+#         xs, ys, zs = [], [], []
+#         for (x, y), count in counter.items():
+#             xs.append(x)
+#             ys.append(y)
+#             zs.append(int(count))
+
+#         norm = colors.Normalize(vmin=1, vmax=5)
+#         cmap = plt.colormaps["coolwarm"]
+#         bar_colors = [cmap(norm(score)) for score in ys]
+
+#         fig = plt.figure(figsize=(10, 7))
+#         ax = fig.add_subplot(111, projection='3d')
+#         dx = dy = 0.5
+#         dz = zs
+
+#         ax.bar3d(xs, ys, np.zeros_like(zs), dx, dy, dz, color=bar_colors, alpha=0.3)
+
+#         ax.set_xlabel('Human Score')
+#         ax.set_ylabel('Model Score')
+#         ax.set_zlabel('Count')
+#         ax.set_title(f'3D Score: {model} - {evaluator}')
+#         ax.set_xlim(0, 5.8)
+#         ax.set_ylim(-0.8, 6)
+#         ax.set_xticks(range(0, 6))
+#         ax.set_yticks(range(0, 6))
+#         ax.set_zlim(0, max(zs) + 1)
+#         ax.set_zticks(range(0, max(zs) + 2, 4))
+
+#         plt.tight_layout()
+#         filename = os.path.join("bar_plot", f"3d_barplot_{model.replace('/', '_')}_{evaluator.replace(' ', '_')}.png")
+        
+#         # Save in Image
+#         plt.savefig(filename, dpi=300)
+#         plt.close()
 
 # === MSE Table ===
 #                            BuzzBench
