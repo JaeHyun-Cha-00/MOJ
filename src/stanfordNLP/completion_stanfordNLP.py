@@ -15,25 +15,30 @@ results = []
 for idx, row in df.iterrows():
     prompt = (
         "This is a Reddit post with two user responses (A and B).\n"
-        "We aim to identify which response is more helpful based on collective Reddit user preferences.\n\n"
+        "Your task is to choose which response is more helpful, based on Reddit user preferences.\n\n"
         f"{row['question']}\n\n"
-        "Please answer only with 'A' or 'B', followed by a brief justification.\n"
-        "Answer:"
+        "Respond in exactly this format:\n"
+        "Answer: A or B\n"
+        "Explanation: <brief justification>\n"
+        "Both 'Answer' and 'Explanation' must be included on separate lines.\n"
+        "Avoid repeating. Be concise and clear.\n"
     )
 
     payload = {
         "model": MODEL_NAME,
         "prompt": prompt,
-        "max_tokens": 1024,
+        "max_tokens": 512,
         "temperature": 0.5,
-        "stop": ["</s>"]
+        "repetition_penalty": 1.2,
+        "stop": ["\n\n"]
     }
 
     try:
         res = requests.post(VLLM_API_URL, headers=HEADERS, data=json.dumps(payload))
         res.raise_for_status()
-        answer = res.json()["choices"][0]["text"].strip()
-        print(f"[{idx}] Answer: {answer}")
+        answer = res.json().get("choices", [{}])[0].get("text", "").strip()
+
+        print(f"[{idx}] {answer}")
         row["attempted_answer"] = answer
     except Exception as e:
         print(f"[{idx}] Failed: {e}")
