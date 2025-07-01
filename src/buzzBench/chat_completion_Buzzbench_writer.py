@@ -47,7 +47,7 @@ Comedy writer: <1–5> (must be 1, 2, 3, 4, or 5 — no decimals)
 
 DO NOT DEVIATE FROM THIS FORMAT.
 
-Here are 5 correctly formatted examples:
+Here are 5 formatted examples:
 
 {few_shot_writer_examples}
 

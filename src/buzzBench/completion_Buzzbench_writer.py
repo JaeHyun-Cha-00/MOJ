@@ -4,33 +4,36 @@ import time
 import json
 
 INPUT_PATH = "../../converted_dataset/buzzbench_converted.csv"
-OUTPUT_PATH = "../../converted_dataset/buzzbench_with_model_llama-3.1-8B-Instruct.csv"
+OUTPUT_PATH = "../../converted_dataset/buzzbench_with_model_llama-3.1-8B-writer.csv"
 
 VLLM_API_URL = "http://localhost:8000/v1/completions"
 MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
 
 df = pd.read_csv(INPUT_PATH)
 headers = {"Content-Type": "application/json"}
-
 attempted_answers = []
 
 for idx, row in df.iterrows():
     prompt_text = f"""
-You are a fair and thoughtful humor evaluator.
+You are a strict humor evaluator representing a professional comedy writer.
 
-Only analyze the character whose intro heading appears below (e.g., "# Character Intro").
-Do not mention or evaluate *any* other characters, even if their names appear in the intro text.
-Your response must only include one character analysis.
+You MUST follow the format **exactly as shown** below. 
+You MUST evaluate ONLY the character whose name appears in the heading (e.g., "# Character Name's intro").  
+If you mention or refer to any other characters, your answer is invalid.
 
-If you mention more than one character, your answer is invalid.
+You MUST NOT include audience opinion or audience ratings.
 
-At the end of your response, include the ratings section in this exact format:
+Use this format for your output:
 
-** Funniness Ratings **
-Audience: <1–5> (must be one of: 1, 2, 3, 4, or 5 — no decimals)
+# <Character Name>'s intro  
+** Intended Humour **  
+<Brief explanation>
+
+** How it Lands **  
+<How a comedy writer might evaluate it>
+
+** Funniness Rating (Comedy writer) **
 Comedy writer: <1–5> (must be one of: 1, 2, 3, 4, or 5 — no decimals)
-
-Use this exact structure. Do not change the heading or labels.
 
 Here is the full introduction text:
 
