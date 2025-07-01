@@ -130,19 +130,21 @@ Continues the running gag of alliterative band descriptions with "top ten techno
 Comedy writer: 3
 
 === Example 4 ===
-# Rich Fulcher's intro  
-On Noel's team tonight, the leader of Mercury-nominated New Young Pony Club. She's so cool. None of you squares probably know who she is, but I do, because a researcher told me. It's Tahita Bulmer. 
+# Richard Fairbrass's intro
+Sean’s first guest is the one and only Richard Fairbrass.
+Too sexy for my shirt, too sexy for my shirt.
+So sexy.
+Formerly the singer with Right Said Fred it was only when he got the job on BBC Two's, Gay Time TV, that Richard had to sit his parents down and confess that he’d become a TV presenter.
+Sean’s second guest is Essex-born singer-songwriter Billy Bragg.
+In his youth, Billy joined the army but bought himself out after only 90 days. Later we'll be having a whip round to see if we can buy him back in. 
 
-Also on Noel's team is one of Britain's most loved early morning impromptu doorstep cash prize givers. It's recovering TV presenter, Keith Chegwin. 
+Phil's first guest is Sarah Blackwood, singer with glamorous Northern electropopsters Dubstar.
+Sarah was once scolded by her mum for saying the word “blimey” on Richard and Judy. Quite right too. The words “tosser” and “irritating old hag” would have been far more appropriate. Phil's second guest is Neil Morrissey. He's an actor who comes from Stoke where remarkably his hairstyle is still ahead of the times.
 
-Phil's first guest is from urban collective N-Dubz. This year he won a MOBO, which you may say is worthless. However, it does entitle him to a mammoth 20 nectar points and free entry to the Keswick Pencil Museum. It's Dappy, ladies and gentlemen. 
+# Richard Fairbrass's intro
+A cleverly constructed joke that inverts the traditional "coming out" narrative by having Fairbrass need to "confess" to becoming a TV presenter rather than his sexuality. 
 
-And his second guest is the mighty Bruce Star and friend of Noel Fielding, but that's not why he's here. It's quiz show asset and valid booking, Rich Fulcher.
-
-# Rich Fulcher's intro  
-This is a well-constructed burn that works through multiple layers of undermining. First comes "friend of Noel Fielding, but that's not why he's here" — already undercutting his booking. Then it doubles down with the comically overcompensating "quiz show asset and valid booking." The fact that Rich is actually a comedy legend in these circles makes the repeated undermining even funnier.
-
-The deliberately corporate language ("valid booking") and defensive justification create humor through the contrast with Fulcher's actual status and talent.
+The setup uses his Right Said Fred fame ("Too sexy for my shirt") to lead into the punchline about having to tell his parents about his TV presenting job on "Gay Time TV." It's an elegant piece of misdirection that also manages to slip in a subtle dig at his career pivot to presenting.
 
 ** Funniness Rating (Comedy Writer) **  
 Comedy writer: 4

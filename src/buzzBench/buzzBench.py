@@ -67,7 +67,7 @@ for row in ds:
         continue
 
 # Save to CSV
-output_path = "../converted_dataset/buzzbench_converted.csv"
+output_path = "../../converted_dataset/buzzbench_converted.csv"
 df = pd.DataFrame(rows)
 df.to_csv(output_path, index=False, quoting=csv.QUOTE_ALL)
 
