@@ -15,15 +15,8 @@ headers = {"Content-Type": "application/json"}
 attempted_answers = []
 
 for idx, row in df.iterrows():
-    # 마지막 캐릭터 이름 추출
-    intro_lines = [line for line in row["question"].split("\n") if line.strip().startswith("# ")]
-    target_line = intro_lines[-1] if intro_lines else "# Unknown's intro"
-    target_character = target_line.replace("#", "").replace("'s intro", "").strip()
-
     prompt_text = f"""
 You are a strict humor evaluator representing a general audience.
-
-Your response must ONLY contain the final formatted answer.
 
 ONLY evaluate the one character whose intro appears **after the heading** like:
 
@@ -31,23 +24,24 @@ ONLY evaluate the one character whose intro appears **after the heading** like:
 
 DO NOT analyze or mention any other character. If you do, your answer is INVALID.
 
-Target character: **{target_character}**
+---
 
-Here are 5 examples:
+Here are 5 formatted examples as a reference:
 
 {few_shot_audience_examples}
 
 ---
 
-Now evaluate only the character below. Use only the character intro marked by `# {target_character}'s intro`:
+Now evaluate the following input.
 
+---  
 {row['question']}
 """
 
     payload = {
         "model": MODEL_NAME,
         "prompt": prompt_text,
-        "max_tokens": 1024,
+        "max_tokens": 2048,
         "temperature": 0.5,
         "stop": ["</s>"]
     }
