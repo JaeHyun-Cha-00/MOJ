@@ -6,7 +6,7 @@ from datasets import load_dataset
 pd.set_option("display.max_columns", None)
 pd.set_option("display.max_colwidth", None)
 
-# Load dataset
+# Load BuzzBench dataset
 ds = load_dataset("sam-paech/BuzzBench-v0.60", split="test")
 
 rows = []
@@ -16,43 +16,47 @@ for row in ds:
         # Clean prompt
         full_prompt = row["prompt"].strip()
 
-        # Remove template placeholder from prompt (e.g., '# [Character 2 name]'s intro\netc.')
+        # Remove template placeholder from prompt
         full_prompt = re.sub(
-            r"# \[Character 2 name\]'s intro\s+etc\.", 
-            "", 
-            full_prompt, 
+            r"# \[Character 2 name\]'s intro\s+etc\.",
+            "",
+            full_prompt,
             flags=re.IGNORECASE
         ).strip()
 
         # Clean golden answer
         golden_answer = row["gold_answer"].strip()
 
-        # Split into character intro blocks
+        # Split golden answer into blocks
         blocks = re.split(r"(?=^# )", golden_answer, flags=re.MULTILINE)
         blocks = [b.strip() for b in blocks if b.strip()]
 
         for block in blocks:
+            # ✅ Skip only "# Overall Assessment"
+            if block.strip().startswith("# Overall Assessment"):
+                continue
+
             # Extract human scores
             matches = re.findall(r"(Home Audience|Audience|Comedy writer|Writer):\s*([1-5])", block, re.IGNORECASE)
             scores = [int(score) for _, score in matches]
             human_score = sum(scores) / len(scores) if scores else None
 
-            # Remove funniness rating section
+            # Remove funniness ratings section
             block_cleaned = re.sub(
-                r"\*\*(Funniness\s+Ratings|Ratings)\*\*.*", 
-                "", 
-                block, 
+                r"\*\*(Funniness\s+Ratings|Ratings)\*\*.*",
+                "",
+                block,
                 flags=re.DOTALL | re.IGNORECASE
             )
 
-            # Extract character title
-            match_title = re.match(r"# (.+?)'s intro", block)
+            # Extract character intro
+            match_title = re.match(r"# (.+?)['’]s? intro", block, re.IGNORECASE)
             character_intro = match_title.group(0) if match_title else "[Unknown Character]"
 
             # Construct final question
             question_combined = f"{full_prompt}\n\n{character_intro}"
 
-            # Append row
+            # Append to result
             rows.append({
                 "question": question_combined.strip(),
                 "question_type": "humor-eval",

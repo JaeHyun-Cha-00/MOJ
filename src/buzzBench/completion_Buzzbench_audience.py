@@ -2,8 +2,9 @@ import pandas as pd
 import requests
 import time
 import json
+from prompt import few_shot_audience_examples
 
-INPUT_PATH = "../../converted_dataset/buzzbench_converted.csv"
+INPUT_PATH = "../../converted_dataset/buzzbench_converted_without_fewshot.csv"
 OUTPUT_PATH = "../../converted_dataset/buzzbench_with_model_llama-3.1-8B-audience.csv"
 
 VLLM_API_URL = "http://localhost:8000/v1/completions"
@@ -14,28 +15,31 @@ headers = {"Content-Type": "application/json"}
 attempted_answers = []
 
 for idx, row in df.iterrows():
+    # 마지막 캐릭터 이름 추출
+    intro_lines = [line for line in row["question"].split("\n") if line.strip().startswith("# ")]
+    target_line = intro_lines[-1] if intro_lines else "# Unknown's intro"
+    target_character = target_line.replace("#", "").replace("'s intro", "").strip()
+
     prompt_text = f"""
-You are a fair and thoughtful humor evaluator representing a general audience.
+You are a strict humor evaluator representing a general audience.
 
-You MUST follow the format **exactly as shown** below. 
-You MUST evaluate ONLY the character whose name appears in the heading (e.g., "# Character Name's intro").  
-If you mention or refer to any other characters, your answer is invalid.
+Your response must ONLY contain the final formatted answer.
 
-You MUST NOT include comedy writer opinion or comedy writer ratings.
+ONLY evaluate the one character whose intro appears **after the heading** like:
 
-Use this format for your output:
+# <Character Name>'s intro
 
-# <Character Name>'s intro  
-** Intended Humour **  
-<Brief explanation>
+DO NOT analyze or mention any other character. If you do, your answer is INVALID.
 
-** How it Lands **  
-<How an audience might evaluate it>
+Target character: **{target_character}**
 
-** Funniness Rating (Audience) **
-Audience: <1–5> (must be one of: 1, 2, 3, 4, or 5 — no decimals)
+Here are 5 examples:
 
-Here is the full introduction text:
+{few_shot_audience_examples}
+
+---
+
+Now evaluate only the character below. Use only the character intro marked by `# {target_character}'s intro`:
 
 {row['question']}
 """
