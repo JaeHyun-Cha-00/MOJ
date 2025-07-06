@@ -2,63 +2,92 @@ import pandas as pd
 import requests
 import time
 import json
+import logging
+import click
 from prompt import few_shot_audience_examples
 
-INPUT_PATH = "../../converted_dataset/buzzbench_converted_without_fewshot.csv"
-OUTPUT_PATH = "../../converted_dataset/buzzbench_with_model_llama-3.1-8B-audience.csv"
-
 VLLM_API_URL = "http://localhost:8000/v1/completions"
-MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
+HEADERS = {"Content-Type": "application/json"}
 
-df = pd.read_csv(INPUT_PATH)
-headers = {"Content-Type": "application/json"}
-attempted_answers = []
+def make_prompt(text):
+    return f"""
+Only analyze the character whose intro heading appears below (e.g., "# Character Intro").
+Do not mention or evaluate *any* other characters, even if their names appear in the intro text.
+Your response must only include one character analysis.
 
-for idx, row in df.iterrows():
-    prompt_text = f"""
-You are a strict humor evaluator representing a general audience.
+If you mention more than one character, your answer is invalid.
 
-ONLY evaluate the one character whose intro appears **after the heading** like:
+At the end of your response, include the ratings section in this exact format:
 
-# <Character Name>'s intro
+** Funniness Ratings **
+Audience: <1–5> (<description from scale>)
+Comedy writer: <1–5> (<description from scale>)
 
-DO NOT analyze or mention any other character. If you do, your answer is INVALID.
+Use this exact structure. Do not change the heading or labels.
 
----
+--
 
 Here are 5 formatted examples as a reference:
 
 {few_shot_audience_examples}
 
----
+--
 
-Now evaluate the following input.
+Here is the full introduction text:
 
----  
-{row['question']}
+{text}
 """
 
-    payload = {
-        "model": MODEL_NAME,
-        "prompt": prompt_text,
-        "max_tokens": 2048,
-        "temperature": 0.5,
-        "stop": ["</s>"]
-    }
+@click.command()
+@click.option("--input_path", type=click.Path(exists=True), required=True, help="Input CSV path")
+@click.option("--output_path", type=click.Path(), required=True, help="Output CSV path")
+@click.option("--model_name", type=str, required=True, help="Model name to be passed to VLLM API")
+@click.option("--verbose", "-v", count=True, help="Verbosity level. Use -v, -vv, etc.")
+def main(input_path, output_path, model_name, verbose):
+    # Logging config
+    logging_level = logging.INFO
+    if verbose == 1:
+        logging_level = logging.DEBUG
+    elif verbose == 2:
+        logging_level = logging.INFO
+    elif verbose == 3:
+        logging_level = logging.WARNING
+    elif verbose == 4:
+        logging_level = logging.ERROR
 
-    try:
-        res = requests.post(VLLM_API_URL, headers=headers, data=json.dumps(payload))
-        res.raise_for_status()
-        completion = res.json()["choices"][0]["text"].strip()
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(logging.FileHandler("mmlu.log", mode="a"))
+    logger.addHandler(logging.StreamHandler())
 
-        print(f"[{idx}] Completion:\n{completion}\n")
-        attempted_answers.append(completion)
+    df = pd.read_csv(input_path)
+    attempted_answers = []
 
-    except Exception as e:
-        print(f"[{idx}] Error: {e}")
-        attempted_answers.append("")
+    for idx, row in df.iterrows():
+        prompt_text = make_prompt(row["question"])
+        payload = {
+            "model": model_name,
+            "prompt": prompt_text,
+            "max_tokens": 2048,
+            "temperature": 0.5,
+            "stop": ["</s>"]
+        }
 
-    time.sleep(0.5)
+        try:
+            res = requests.post(VLLM_API_URL, headers=HEADERS, data=json.dumps(payload))
+            res.raise_for_status()
+            completion = res.json()["choices"][0]["text"].strip()
+            logger.debug(f"[{idx}] Completion:\n{completion}\n")
+            attempted_answers.append(completion)
+        except Exception as e:
+            logger.error(f"[{idx}] Error: {e}")
+            attempted_answers.append("")
 
-df["attempted_answer"] = attempted_answers
-df.to_csv(OUTPUT_PATH, index=False, quoting=1)
+        time.sleep(0.5)
+
+    df["attempted_answer"] = attempted_answers
+    df.to_csv(output_path, index=False, quoting=1)
+    logger.info(f"Saved results to: {output_path}")
+
+if __name__ == "__main__":
+    main()

@@ -2,26 +2,12 @@ import pandas as pd
 import requests
 import time
 import json
+import logging
+import click
 from prompt import few_shot_writer_examples
 
-INPUT_PATH = "../../converted_dataset/buzzbench_converted.csv"
-
-# OUTPUT_PATH = "../../converted_dataset/buzzbench_model_qwen2.5-7B-Instruct.csv"
-OUTPUT_PATH = "../../converted_dataset/buzzbench_writer_only_phi-4-mini.csv"
-# OUTPUT_PATH = "../../converted_dataset/buzzbench_model_DeepSeek-R1-0528-Qwen3-8B.csv"
-# OUTPUT_PATH = "../../converted_dataset/buzzbench_model_Qwen3-8B.csv"
-
 VLLM_API_URL = "http://localhost:8000/v1/chat/completions"
-
-# MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
-MODEL_NAME = "microsoft/Phi-4-mini-instruct"
-# MODEL_NAME = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"
-# MODEL_NAME = "Qwen/Qwen3-8B"
-
-headers = {"Content-Type": "application/json"}
-
-df = pd.read_csv(INPUT_PATH)
-attempted_answers = []
+HEADERS = {"Content-Type": "application/json"}
 
 def make_writer_prompt(text):
     return f"""
@@ -56,27 +42,57 @@ Now evaluate:
 {text}
 """
 
+@click.command()
+@click.option("--input_path", type=click.Path(exists=True), required=True, help="Path to input CSV file")
+@click.option("--output_path", type=click.Path(), required=True, help="Path to save output CSV")
+@click.option("--model_name", type=str, required=True, help="Model name (e.g., microsoft/Phi-4-mini-instruct)")
+@click.option("--verbose", "-v", count=True, help="Verbosity level (e.g., -v, -vv)")
+def main(input_path, output_path, model_name, verbose):
+    # Set up logging
+    logging_level = logging.INFO
+    if verbose == 1:
+        logging_level = logging.DEBUG
+    elif verbose == 2:
+        logging_level = logging.INFO
+    elif verbose == 3:
+        logging_level = logging.WARNING
+    elif verbose == 4:
+        logging_level = logging.ERROR
 
-for idx, row in df.iterrows():
-    question_text = row["question"]
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(logging.FileHandler("mmlu.log", mode="a"))
+    logger.addHandler(logging.StreamHandler())
 
-    try:
+    df = pd.read_csv(input_path)
+    attempted_answers = []
+
+    for idx, row in df.iterrows():
+        prompt = make_writer_prompt(row["question"])
         payload = {
-            "model": MODEL_NAME,
-            "messages": [{"role": "user", "content": make_writer_prompt(question_text)}],
+            "model": model_name,
+            "messages": [{"role": "user", "content": prompt}],
             "max_tokens": 2048,
             "temperature": 0.5
         }
-        res = requests.post(VLLM_API_URL, headers=headers, data=json.dumps(payload))
-        res.raise_for_status()
-        writer_output = res.json()["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        print(f"[{idx}] Writer Error: {e}")
-        writer_output = ""
 
-    time.sleep(0.5)
-    attempted_answers.append(writer_output)
-    print(f"[{idx}] Done")
+        try:
+            res = requests.post(VLLM_API_URL, headers=HEADERS, data=json.dumps(payload))
+            res.raise_for_status()
+            response = res.json()
+            content = response["choices"][0]["message"]["content"].strip()
+            attempted_answers.append(content)
+            logger.debug(f"[{idx}] Completion:\n{content}\n")
+        except Exception as e:
+            logger.error(f"[{idx}] Writer Error: {e}")
+            attempted_answers.append("")
 
-df["attempted_answer"] = attempted_answers
-df.to_csv(OUTPUT_PATH, index=False, quoting=1)
+        logger.info(f"[{idx}] Done")
+        time.sleep(0.5)
+
+    df["attempted_answer"] = attempted_answers
+    df.to_csv(output_path, index=False, quoting=1)
+    logger.info(f"Saved results to: {output_path}")
+
+if __name__ == "__main__":
+    main()

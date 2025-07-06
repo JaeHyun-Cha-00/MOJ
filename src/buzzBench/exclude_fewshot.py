@@ -1,8 +1,8 @@
 import pandas as pd
 import csv
 
-input_path = "../../converted_dataset/buzzbench_converted.csv"
-output_path = "../../converted_dataset/buzzbench_converted_without_fewshot.csv"
+input_path = "../../converted_dataset/buzzbench_converted_audience.csv"
+output_path = "../../converted_dataset/buzzbench_converted_audience_without_fewshot.csv"
 
 excluded_row_indices = [29, 27, 41, 44, 43, 0, 3, 18, 19, 12]
 
