@@ -32,7 +32,7 @@ for row in ds:
         blocks = [b.strip() for b in blocks if b.strip()]
 
         for block in blocks:
-            # ✅ Skip only "# Overall Assessment"
+
             if block.strip().startswith("# Overall Assessment"):
                 continue
 
