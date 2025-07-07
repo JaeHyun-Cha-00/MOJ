@@ -9,31 +9,25 @@ from prompt import few_shot_writer_examples
 VLLM_API_URL = "http://localhost:8000/v1/chat/completions"
 HEADERS = {"Content-Type": "application/json"}
 
+# Qwen2.5-7B-Instruct (O), Phi-4-mini-instruct (), Qwen3-8B (), DeepSeek-R1-0528-Qwen3-8B (), Llama-3.1-8B-Instruct (O) 
+
 def make_writer_prompt(text):
     return f"""
-You are a strict humor evaluator representing a professional comedy writer.
+You are a humor evaluator representing a general comedy writer.
 
-You MUST follow the format **exactly as shown** below.  
-You MUST evaluate ONLY the character whose name appears in the heading (e.g., "# Character Name's intro").  
-If you mention or refer to any other characters, your answer is invalid.
-
-You MUST NOT include audience opinions or audience ratings.
-
-Use this format for your output:
+Your response must ONLY contain the final formatted answer.
 
 # <Character Name>'s intro  
 ** Intended Humour **  
 <Brief explanation>
 
 ** How it Lands **  
-<How a comedy writer might evaluate it>
+<How the comedy writer might react>
 
-** Funniness Rating (Comedy Writer) **  
+** Funniness Rating **  
 Comedy writer: <1–5> (must be 1, 2, 3, 4, or 5 — no decimals)
 
-DO NOT DEVIATE FROM THIS FORMAT.
-
-Here are 5 formatted examples:
+Here are 5 examples:
 
 {few_shot_writer_examples}
 
@@ -43,12 +37,12 @@ Now evaluate:
 """
 
 @click.command()
-@click.option("--input_path", type=click.Path(exists=True), required=True, help="Path to input CSV file")
-@click.option("--output_path", type=click.Path(), required=True, help="Path to save output CSV")
-@click.option("--model_name", type=str, required=True, help="Model name (e.g., microsoft/Phi-4-mini-instruct)")
-@click.option("--verbose", "-v", count=True, help="Verbosity level (e.g., -v, -vv)")
+@click.option("--input_path", type=click.Path(exists=True), required=True, help="Input CSV path")
+@click.option("--output_path", type=click.Path(), required=True, help="Output CSV path")
+@click.option("--model_name", type=str, required=True, help="Model name (e.g., Qwen/Qwen2.5-7B-Instruct)")
+@click.option("--verbose", "-v", count=True, help="Verbosity level")
 def main(input_path, output_path, model_name, verbose):
-    # Set up logging
+    # Logging
     logging_level = logging.INFO
     if verbose == 1:
         logging_level = logging.DEBUG
@@ -79,17 +73,24 @@ def main(input_path, output_path, model_name, verbose):
         try:
             res = requests.post(VLLM_API_URL, headers=HEADERS, data=json.dumps(payload))
             res.raise_for_status()
-            response = res.json()
-            content = response["choices"][0]["message"]["content"].strip()
+
+            res_json = res.json()
+
+            content = res_json.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+            if not content:
+                logger.warning(f"[{idx}] Empty content in response.")
+
             attempted_answers.append(content)
             logger.debug(f"[{idx}] Completion:\n{content}\n")
+
         except Exception as e:
-            logger.error(f"[{idx}] Writer Error: {e}")
+            logger.error(f"[{idx}] Audience Error: {e}")
             attempted_answers.append("")
 
         logger.info(f"[{idx}] Done")
         time.sleep(0.5)
 
+    logger.info(f"Total answers collected: {len(attempted_answers)} vs {len(df)} rows in DataFrame")
     df["attempted_answer"] = attempted_answers
     df.to_csv(output_path, index=False, quoting=1)
     logger.info(f"Saved results to: {output_path}")

@@ -98,7 +98,7 @@ Phil's first guest is Suggs. After his last appearance on the show the Madness f
 # Marie De Santiago's intro  
 Contains a series of jokes playing on the "Cities' answer to the Spice Girls" comparison, but the execution is lackluster. The "their music is much better" line is formulaic, while the age comparison feels tacked on. The humor primarily works through the Spice Girls being a reliable punching bag for the show, but even this familiar territory is handled half-heartedly.
 
-** Funniness Rating (Comedy Writer) **  
+** Funniness Rating **  
 Comedy writer: 1
 
 === Example 2 ===
@@ -110,7 +110,7 @@ Phil's first guest is Suggs. After his last appearance on the show the Madness f
 # Shaggy's intro  
 The joke attempts to subvert expectations about Shaggy's name origin with "fat bird with the pleated skirt and glasses" as the punchline, but the construction feels forced and inelegant. However, the unnecessarily vicious swipe at Velma (a completely undeserving target) somewhat redeems it in the context of the show's style of humor.
 
-** Funniness Rating (Comedy Writer) **  
+** Funniness Rating **  
 Comedy writer: 2
 
 === Example 3 ===
@@ -126,7 +126,7 @@ Sean’s second guest is comedian, author, and chart topper David Baddiel. David
 # Saffron's intro  
 Continues the running gag of alliterative band descriptions with "top ten techno monkeys," which becomes funnier as part of the pattern established through the intros. The Baywatch joke about the soundtrack and cast being "available in vinyl" works as a reference to the show's signature skintight costumes of the era. While not the strongest joke, it's serviceable.
 
-** Funniness Rating (Comedy Writer) **  
+** Funniness Rating **  
 Comedy writer: 3
 
 === Example 4 ===
@@ -146,7 +146,7 @@ A cleverly constructed joke that inverts the traditional "coming out" narrative 
 
 The setup uses his Right Said Fred fame ("Too sexy for my shirt") to lead into the punchline about having to tell his parents about his TV presenting job on "Gay Time TV." It's an elegant piece of misdirection that also manages to slip in a subtle dig at his career pivot to presenting.
 
-** Funniness Rating (Comedy Writer) **  
+** Funniness Rating **  
 Comedy writer: 4
 
 === Example 5 ===
@@ -164,6 +164,6 @@ Masterfully constructed joke that builds on the established pattern of alliterat
 
 The humor works through both the absurd title and the way the punchline reveals the context, managing to be both shocking and cleverly constructed.
 
-** Funniness Rating (Comedy Writer) **  
+** Funniness Rating **  
 Comedy writer: 5
 """
