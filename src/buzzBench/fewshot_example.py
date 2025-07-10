@@ -6,7 +6,7 @@ Phil's first guest is Slade's frontman, glam rock godfather, Noddy Holder. He's 
 # Louise Wener's intro  
 The attempted humor relies entirely on describing an apparently unflattering childhood photo ("weedy nine-year-old with gimpy clothes and glasses"). Without seeing the actual photo, this barely qualifies as a joke and comes across as lazy writing. While it attempts to play on the contrast between her Britpop image and childhood awkwardness, it fails to land effectively.
 
-** Funniness Rating (Audience) **  
+** Funniness Rating **  
 Audience: 1
 
 === Example 2 ===
@@ -30,7 +30,7 @@ The joke attempts to work through:
 
 However, while technically constructed well, it doesn't quite hit the mark in terms of humor.
 
-** Funniness Rating (Audience) **  
+** Funniness Rating **  
 Audience: 2
 
 === Example 3 ===
@@ -48,7 +48,7 @@ The humor operates on multiple levels through a self-referential joke that punct
 
 The joke lands effectively because it's relatable (most viewers won't know her either) while maintaining Buzzcocks' tradition of deflating music industry pretension. The self-awareness prevents any mean-spiritedness.
 
-** Funniness Rating (Audience) **  
+** Funniness Rating **  
 Audience: 3
 
 === Example 4 ===
@@ -66,7 +66,7 @@ This is a well-constructed burn that works through multiple layers of underminin
 
 The deliberately corporate language ("valid booking") and defensive justification create humor through the contrast with Fulcher's actual status and talent.
 
-** Funniness Rating (Audience) **  
+** Funniness Rating **  
 Audience: 4
 
 === Example 5 ===
@@ -84,7 +84,7 @@ A masterclass in extended mockery that builds through multiple stages. It starts
 
 The specificity is perfect — using a small, precise number of supermarket points and the real but inherently amusing Pencil Museum. This extended dunking on Dappy perfectly fits the show's style and what the audience expects and loves.
 
-** Funniness Rating (Audience) **  
+** Funniness Rating **  
 Audience: 5
 """
 

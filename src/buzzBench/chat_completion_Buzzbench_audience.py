@@ -4,7 +4,7 @@ import time
 import json
 import logging
 import click
-from prompt import few_shot_audience_examples
+from fewshot_example import few_shot_audience_examples
 
 VLLM_API_URL = "http://localhost:8000/v1/chat/completions"
 HEADERS = {"Content-Type": "application/json"}
@@ -25,12 +25,8 @@ Your response must ONLY contain the final formatted answer.
 ** How it Lands **  
 <How the audience might react>
 
-** Funniness Rating (Audience) **  
+** Funniness Rating **  
 Audience: <1–5> (must be 1, 2, 3, 4, or 5 — no decimals)
-
-Here are 5 formatted examples:
-
-{few_shot_audience_examples}
 
 Now evaluate:
 
@@ -77,7 +73,6 @@ def main(input_path, output_path, model_name, verbose):
 
             res_json = res.json()
 
-            # Ensure structure is compatible with Qwen output format
             content = res_json.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
             if not content:
                 logger.warning(f"[{idx}] Empty content in response.")
@@ -99,3 +94,6 @@ def main(input_path, output_path, model_name, verbose):
 
 if __name__ == "__main__":
     main()
+
+
+# python chat_completion_Buzzbench_audience.py   --input_path ../../converted_dataset/buzzbench/general/buzzbench_converted_audience.csv   --output_path ../../converted_dataset/qwen3-8B_general_audience.csv   --model_name Qwen/Qwen3-8B

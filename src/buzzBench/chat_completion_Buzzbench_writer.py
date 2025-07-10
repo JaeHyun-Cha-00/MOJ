@@ -28,10 +28,6 @@ Your response must ONLY contain the final formatted answer.
 ** Funniness Rating **  
 Comedy writer: <1–5> (must be 1, 2, 3, 4, or 5 — no decimals)
 
-Here are 5 examples:
-
-{few_shot_writer_examples}
-
 Now evaluate:
 
 {text}
