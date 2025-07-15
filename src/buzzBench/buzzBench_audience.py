@@ -117,7 +117,7 @@ for row in ds:
         continue
 
 # Save to CSV
-output_path = "../../converted_dataset/buzzbench_converted_audience.csv"
+output_path = "../../converted_dataset/buzzbench/default/buzzbench_converted_audience.csv"
 df = pd.DataFrame(rows)
 df.to_csv(output_path, index=False, quoting=csv.QUOTE_ALL)
 

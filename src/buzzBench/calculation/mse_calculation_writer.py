@@ -91,6 +91,8 @@ for model in models:
         if 0 <= h <= 5 and 0 <= m <= 5:
             heatmap_data[h][m] = count
 
+    heatmap_data = heatmap_data[::-1]
+
     vmax = int(max(counter.values())) if counter else 1
 
     plt.figure(figsize=(6, 5))
@@ -102,13 +104,13 @@ for model in models:
         vmax=vmax,
         square=True,
         xticklabels=range(6),
-        yticklabels=range(6)
+        yticklabels=range(5, -1, -1)
     )
     plt.xlabel("Model Score")
     plt.ylabel("Human Score")
     plt.title(f"Heatmap: {model} (Comedy Writer)")
 
-    filename = f"bar_plot/heatmap_writer_{model.replace('/', '_')}.png"
+    filename = f"../heatmap/buzzbench/general/heatmap_writer_{model.replace('/', '_')}_general.png"
     plt.tight_layout()
     plt.savefig(filename, dpi=300)
     plt.close()

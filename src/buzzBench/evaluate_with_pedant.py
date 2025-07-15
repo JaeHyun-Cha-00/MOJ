@@ -36,7 +36,7 @@ for INPUT_PATH in input_files:
     name, ext = os.path.splitext(filename)
     OUTPUT_PATH = os.path.join("../../converted_dataset", f"{name}_with_pedant{ext}")
 
-    print(f"📂 Processing: {filename}")
+    print(f"Processing: {filename}")
 
     df = pd.read_csv(INPUT_PATH)
     scores = []

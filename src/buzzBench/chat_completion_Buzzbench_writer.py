@@ -9,9 +9,6 @@ from fewshot_example import few_shot_writer_examples
 VLLM_API_URL = "http://localhost:8000/v1/chat/completions"
 HEADERS = {"Content-Type": "application/json"}
 
-# Few shot : Qwen2.5-7B-Instruct (O), Phi-4-mini-instruct (O), Qwen3-8B (O), DeepSeek-R1-0528-Qwen3-8B (), Llama-3.1-8B-Instruct (O)
-# General : 
-
 def make_writer_prompt(text):
     return f"""
 You are a humor evaluator representing a general comedy writer.

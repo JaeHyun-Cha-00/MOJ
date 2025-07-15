@@ -7,11 +7,11 @@ import seaborn as sns
 from collections import Counter
 
 file_paths = {
-    "phi-4-mini-instruct": "../../converted_dataset/buzzbench_converted_phi4-mini-instruct_fewshot_audience_results.csv",
-    "qwen2.5-7B-Instruct": "../../converted_dataset/buzzbench_converted_qwen2.5-7B-Instruct_fewshot_audience_results.csv",
-    "llama-3.1-8B-Instruct": "../../converted_dataset/buzzbench_converted_llama3.1-8B-Instruct_fewshot_audience.csv",
-    "DeepSeek-R1-0528-Qwen3-8B": "../../converted_dataset/buzzbench_converted_deepseek-qwen3-8B_fewshot_audience_results.csv",
-    "Qwen3-8B": "../../converted_dataset/buzzbench_converted_qwen3-8B_fewshot_audience_results.csv"
+    "phi-4-mini-instruct": "../../../converted_dataset/buzzbench/fewshot/buzzbench_converted_phi4-mini-instruct_fewshot_audience_results.csv",
+    "qwen2.5-7B-Instruct": "../../../converted_dataset/buzzbench/fewshot/buzzbench_converted_qwen2.5-7B-Instruct_fewshot_audience_results.csv",
+    "llama-3.1-8B-Instruct": "../../../converted_dataset/buzzbench/fewshot/buzzbench_converted_llama3.1-8B-Instruct_fewshot_audience.csv",
+    "DeepSeek-R1-0528-Qwen3-8B": "../../../converted_dataset/buzzbench/fewshot/buzzbench_converted_deepseek-qwen3-8B_fewshot_audience_results.csv",
+    "Qwen3-8B": "../../../converted_dataset/buzzbench/fewshot/buzzbench_converted_qwen3-8B_fewshot_audience_results.csv"
 }
 
 def extract_audience_score(text):
@@ -82,6 +82,8 @@ for model in models:
         if 0 <= h <= 5 and 0 <= m <= 5:
             heatmap_data[h][m] = count
 
+    heatmap_data = heatmap_data[::-1]
+
     vmax = int(max(counter.values())) if counter else 1
 
     plt.figure(figsize=(6, 5))
@@ -93,13 +95,13 @@ for model in models:
         vmax=vmax,
         square=True,
         xticklabels=range(6),
-        yticklabels=range(6)
+        yticklabels=range(5, -1, -1)
     )
     plt.xlabel("Model Score")
     plt.ylabel("Human Score")
     plt.title(f"Heatmap: {model} (Audience)")
 
-    filename = f"bar_plot/heatmap_audience_{model.replace('/', '_')}.png"
+    filename = f"../heatmap/buzzbench/fewshot/heatmap_audience_{model.replace('/', '_')}_fewshot.png"
     plt.tight_layout()
     plt.savefig(filename, dpi=300)
     plt.close()
