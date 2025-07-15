@@ -2,3 +2,6 @@
 dataset/
 converted_dataset/
 *.log
+
+# python cache
+__pycache__/
