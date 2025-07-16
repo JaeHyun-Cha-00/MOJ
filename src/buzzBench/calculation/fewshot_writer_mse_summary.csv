@@ -1,6 +1,0 @@
-model,MSE,Total Rows,Valid Rows,Writer NaN,Pedant NaN
-phi-4-mini-instruct,1.8455,133,133,0,0
-qwen2.5-7B-Instruct,0.9283,133,131,2,0
-llama-3.1-8B-Instruct,1.0907,133,132,1,0
-DeepSeek-R1-0528-Qwen3-8B,1.1886,133,127,6,0
-Qwen3-8B,1.5855,133,126,7,0
