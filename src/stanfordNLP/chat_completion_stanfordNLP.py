@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 import json
 
-INPUT_PATH = "../../converted_dataset/shp_converted.csv"
+INPUT_PATH = "../../converted_dataset/stanfordNLP/shp_converted.csv"
 # OUTPUT_PATH = "../../converted_dataset/shp_with_model_qwen2.5-7B.csv"
 OUTPUT_PATH = "../../converted_dataset/shp_with_model_phi-4-multimodal-instruct.csv"
 # OUTPUT_PATH = "../../converted_dataset/shp_with_model_deepSeek-R1-0528-Qwen3-8B.csv"
@@ -23,17 +23,13 @@ for idx, row in df.iterrows():
         "You are a helpful assistant tasked with evaluating Reddit comment quality.\n"
         "Given two user responses to a Reddit post, choose which response is more helpful, based on Reddit community preferences.\n\n"
         "Your response MUST follow this exact format:\n"
-        "Answer: A or B\n"
-        "Explanation: <brief justification>\n"
-        "Do not include any other text or formatting."
+        "Answer: A or B or Tie\n"
     )
 
     user_prompt = (
         f"{row['question']}\n\n"
-        "Between Candidate A and Candidate B, who provided a more helpful response?\n"
         "Respond only with your final answer in the following format:\n"
-        "Answer: A or B\n"
-        "Explanation: <brief justification>"
+        "Answer: A or B or Tie\n"
     )
 
     payload = {
@@ -44,8 +40,7 @@ for idx, row in df.iterrows():
         ],
         "max_tokens": 512,
         "temperature": 0.5,
-        "repetition_penalty": 1.2,
-        "stop": ["\n\n"]
+        "repetition_penalty": 1.2
     }
 
     try:

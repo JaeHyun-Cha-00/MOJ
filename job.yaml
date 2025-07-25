@@ -1,0 +1,104 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llm-eval-llama3-8b-instruct
+spec:
+  template:
+    spec:
+      containers:
+        - name: evaluator
+          image: llm-eval:latest
+          env:
+            - name: VLLM_API_URL
+              value: http://vllm-service.default.svc.cluster.local:8000/v1/chat/completions
+          args: ["--model_name", "meta-llama/Llama-3.1-8B-Instruct",
+                 "--input_path", "/app/data/buzzbench_converted_nautilus.csv",
+                 "--output_path", "/app/results/llama3-8b-instruct_result.csv"]
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llm-eval-qwen3-8b
+spec:
+  template:
+    spec:
+      containers:
+        - name: evaluator
+          image: llm-eval:latest
+          env:
+            - name: VLLM_API_URL
+              value: http://vllm-service.default.svc.cluster.local:8000/v1/chat/completions
+          args: ["--model_name", "Qwen/Qwen3-8B",
+                 "--input_path", "/app/data/buzzbench_converted_nautilus.csv",
+                 "--output_path", "/app/results/qwen3-8b_result.csv"]
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llm-eval-qwen2.5-7b-instruct
+spec:
+  template:
+    spec:
+      containers:
+        - name: evaluator
+          image: llm-eval:latest
+          env:
+            - name: VLLM_API_URL
+              value: http://vllm-service.default.svc.cluster.local:8000/v1/chat/completions
+          args: ["--model_name", "Qwen/Qwen2.5-7B-Instruct",
+                 "--input_path", "/app/data/buzzbench_converted_nautilus.csv",
+                 "--output_path", "/app/results/qwen2.5-7b-instruct_result.csv"]
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llm-eval-phi4-mini-instruct
+spec:
+  template:
+    spec:
+      containers:
+        - name: evaluator
+          image: llm-eval:latest
+          env:
+            - name: VLLM_API_URL
+              value: http://vllm-service.default.svc.cluster.local:8000/v1/chat/completions
+          args: ["--model_name", "microsoft/Phi-4-mini-instruct",
+                 "--input_path", "/app/data/buzzbench_converted_nautilus.csv",
+                 "--output_path", "/app/results/phi4-mini-instruct_result.csv"]
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llm-eval-deepseek-r1-0528
+spec:
+  template:
+    spec:
+      containers:
+        - name: evaluator
+          image: llm-eval:latest
+          env:
+            - name: VLLM_API_URL
+              value: http://vllm-service.default.svc.cluster.local:8000/v1/chat/completions
+          args: ["--model_name", "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
+                 "--input_path", "/app/data/buzzbench_converted_nautilus.csv",
+                 "--output_path", "/app/results/deepseek-r1-0528_result.csv"]
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      restartPolicy: Never
