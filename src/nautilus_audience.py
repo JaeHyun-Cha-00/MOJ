@@ -6,11 +6,9 @@ import logging
 import os
 import click
 
-# ▶️ 환경변수로 설정 가능 (기본값은 localhost)
 VLLM_API_URL = os.environ.get("VLLM_API_URL", "http://localhost:8000/v1/chat/completions")
 HEADERS = {"Content-Type": "application/json"}
 
-# 📝 프롬프트 생성 함수
 def make_audience_prompt(text):
     return f"""
 You are a humor evaluator representing a general audience.
@@ -38,7 +36,6 @@ Now evaluate:
 @click.option("--model_name", type=str, required=True, help="Model name (e.g., Qwen/Qwen3-8B)")
 @click.option("--verbose", "-v", count=True, help="Verbosity level")
 def main(input_path, output_path, model_name, verbose):
-    # 🧾 로깅 설정
     os.makedirs("/app/logs", exist_ok=True)
     log_file = f"/app/logs/{model_name.replace('/', '_')}.log"
 
@@ -53,7 +50,6 @@ def main(input_path, output_path, model_name, verbose):
     logger.info(f"Output: {output_path}")
     logger.info(f"VLLM endpoint: {VLLM_API_URL}")
 
-    # 📥 CSV 불러오기
     df = pd.read_csv(input_path)
     attempted_answers = []
 
@@ -84,7 +80,6 @@ def main(input_path, output_path, model_name, verbose):
         logger.info(f"[{idx}] Done")
         time.sleep(0.5)
 
-    # 💾 저장
     logger.info(f"Collected answers: {len(attempted_answers)} / {len(df)} rows")
     df["attempted_answer"] = attempted_answers
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
